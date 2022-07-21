@@ -17,7 +17,6 @@
 Define_Module(LteRlcUm);
 
 using namespace omnetpp;
-using namespace inet;
 
 UmTxEntity* LteRlcUm::getTxBuffer(inet::Ptr<FlowControlInfo> lteInfo)
 {
