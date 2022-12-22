@@ -144,11 +144,6 @@ module VirtualisationInfrastructure
             at.in++ <-- mecPlatform$i[i];
         }
 
-        for i=0..sizeof(mecPlatform)-1 {
-            at.out++ --> mecPlatform$o[i];
-            at.in++ <-- mecPlatform$i[i];
-        }
-
         //# 
         //# App layer to transport layer connections
         //#

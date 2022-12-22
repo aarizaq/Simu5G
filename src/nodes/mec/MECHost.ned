@@ -39,9 +39,7 @@ module MECHost
         double maxCpuSpeed = default(300000); 	 // CPU's clock speed in Million Instruction per Seconds (MIPS)
 
         int numBGMecApp = default(0);
-
         int numIndependentMecApp = default(0);
-
         
         //# List of Base Stations associated to the MEC host
         // This is a string of comma-separated values
