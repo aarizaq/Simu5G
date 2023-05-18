@@ -62,29 +62,29 @@ class RTVideoStreamingSender: public cSimpleModule
     int deviceAppPort_;
     inet::L3Address deviceAppAddress_;
 
-    char* sourceSimbolicAddress;            //Ue[x]
-    char* deviceSimbolicAppAddress_;        //meHost.virtualisationInfrastructure
+    char* sourceSimbolicAddress = nullptr;            //Ue[x]
+    char* deviceSimbolicAppAddress_ = nullptr;        //meHost.virtualisationInfrastructure
 
     // MEC application endPoint (returned by the device app)
     inet::L3Address mecAppAddress_;
-    int mecAppPort_;
+    int mecAppPort_ = -1;
 
     std::string mecAppName;
 
     //scheduling
-    cMessage *selfRTVideoStreamingAppStart_;
-    cMessage *selfRTVideoStreamingAppStop_;
+    cMessage *selfRTVideoStreamingAppStart_ = nullptr;
+    cMessage *selfRTVideoStreamingAppStop_ = nullptr;
 
-    cMessage *selfMecAppStart_;
-    cMessage *selfMecAppStop_;
+    cMessage *selfMecAppStart_ = nullptr;
+    cMessage *selfMecAppStop_ = nullptr;
 
-    cMessage* selfSessionStart_;
-    cMessage* selfSessionStop_;
+    cMessage* selfSessionStart_ = nullptr;
+    cMessage* selfSessionStop_ = nullptr;
 
-    bool stop_;
+    bool stop_ = false;
 
     inet::UdpSocket videoStreamSocket_;
-    int port;
+    int port = -1;
 
     const char* fileName;
     /**
@@ -96,27 +96,27 @@ class RTVideoStreamingSender: public cSimpleModule
     bool moduleCreated;
 
     int mtu_;
-    cMessage* _nextFrame;
+    cMessage* _nextFrame = nullptr;
 
     /**
      * duration of each session
      */
-    double sessionDuration_;
+    double sessionDuration_ = -1;
 
     /**
      * period between sessions
      */
-    double periodBetweenSession_;
+    double periodBetweenSession_ = -1;
 
     /**
      * The initial delay of the mpeg video.
      */
-    double _initialDelay;
+    double _initialDelay = -1;
 
     /**
      * The number of frames per second of the video.
      */
-    double _framesPerSecond;
+    double _framesPerSecond = -1;
 
     /**
      * The number of the current frame. Needed for calculating
