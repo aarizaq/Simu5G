@@ -134,6 +134,7 @@ class LtePhyBase : public ChannelAccess
     omnetpp::simsignal_t averageCqiDl_;
     omnetpp::simsignal_t averageCqiUl_;
     omnetpp::simsignal_t averageCqiD2D_;
+    omnetpp::simsignal_t macNodeIdSignal_;
 
     // User that are trasmitting (uplink)
     //receiveng(downlink) current packet
@@ -247,6 +248,13 @@ class LtePhyBase : public ChannelAccess
      * Delay is calculated based on sender's and receiver's positions.
      */
     virtual void sendUnicast(LteAirFrame *airFrame);
+
+    /**
+     * @brief Called when a mobilityStateChanged signal is received.
+     *
+     * Emit statistics related to the serving cell
+     */
+    virtual void emitMobilityStats() override {}
 
   protected:
 

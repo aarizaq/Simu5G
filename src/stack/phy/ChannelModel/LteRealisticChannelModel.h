@@ -160,16 +160,9 @@ protected:
   // statistics
   static omnetpp::simsignal_t rcvdSinrDl_;
   static omnetpp::simsignal_t rcvdSinrUl_;
+  static omnetpp::simsignal_t rcvdSinrD2D_;
   static omnetpp::simsignal_t measuredSinrDl_;
   static omnetpp::simsignal_t measuredSinrUl_;
-  static omnetpp::simsignal_t distance_;
-
-  // rsrq from log file
-  bool useRsrqFromLog_;
-  int rsrqShift_;
-  double rsrqScale_;
-  int oldTime_;
-  int oldRsrq_;
 
 public:
   virtual void initialize(int stage);
@@ -211,7 +204,7 @@ public:
   *
   * @param angle angle
   */
-  virtual double computeAngolarAttenuation(double hAngle, double vAngle = 0);
+  virtual double computeAngularAttenuation(double hAngle, double vAngle = 0);
 
   /*
    * Compute shadowing

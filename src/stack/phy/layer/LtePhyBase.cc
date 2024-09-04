@@ -31,6 +31,8 @@ void LtePhyBase::initialize(int stage)
 
     if (stage == inet::INITSTAGE_LOCAL)
     {
+        macNodeIdSignal_ = registerSignal("macNodeId");
+
         binder_ = getBinder();
         cellInfo_ = nullptr;
         // get gate ids
@@ -59,7 +61,7 @@ void LtePhyBase::initialize(int stage)
 
 void LtePhyBase::handleMessage(cMessage* msg)
 {
-    EV << " LtePhyBase::handleMessage - new message received" << endl;
+    EV << "LtePhyBase::handleMessage - new message received" << endl;
 
     if (msg->isSelfMessage())
     {
@@ -117,7 +119,7 @@ LteAirFrame *LtePhyBase::createHandoverMessage()
 
 void LtePhyBase::handleUpperMessage(cMessage* msg)
 {
-    EV << "LtePhy: message from stack" << endl;
+     EV << "LtePhy: message from stack" << endl;
 
     auto pkt = check_and_cast<inet::Packet *>(msg);
     auto lteInfo = pkt->removeTag<UserControlInfo>();
@@ -156,7 +158,7 @@ void LtePhyBase::handleUpperMessage(cMessage* msg)
     frame->setControlInfo(lteInfo.get()->dup());
 
     EV << "LtePhy: " << nodeTypeToA(nodeType_) << " with id " << nodeId_
-       << " sending message to the air channel. Dest=" << lteInfo->getDestId() << endl;
+       << " sending message (" << phyFrameTypeToA(lteInfo->getFrameType()) << ") to the air channel. Dest=" << lteInfo->getDestId() << endl;
     sendUnicast(frame);
 }
 

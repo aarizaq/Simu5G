@@ -1,37 +1,35 @@
-// 
+//
 //                  Simu5G
 //
 // Authors: Giovanni Nardini, Giovanni Stea, Antonio Virdis (University of Pisa)
-// 
+//
 // This file is part of a software released under the license included in file
 // "license.pdf". Please read LICENSE and README files before using it.
-// The above files and the present reference are part of the software itself, 
+// The above files and the present reference are part of the software itself,
 // and cannot be removed from it.
-// 
+//
 
 
 package simu5g.nodes;
 
 import inet.applications.contract.IApp;
+import inet.common.MessageDispatcher;
 import inet.common.packet.recorder.PcapRecorder;
-import inet.mobility.contract.IMobility;
 import inet.linklayer.contract.IEthernetInterface;
 import inet.linklayer.contract.ILoopbackInterface;
-import inet.linklayer.ethernet.contract.IEthernetLayer;
+import inet.linklayer.contract.IEthernetLayer;
+import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
-import inet.networklayer.ipv4.Ipv4RoutingTable;
-import inet.networklayer.contract.IRoutingTable;
 import inet.networklayer.contract.INetworkLayer;
-import inet.common.packet.recorder.PcapRecorder;
+import inet.transportlayer.contract.ISctp;
 import inet.transportlayer.contract.ITcp;
 import inet.transportlayer.contract.IUdp;
-import inet.transportlayer.contract.ISctp;
-import inet.common.MessageDispatcher;
+import simu5g.corenetwork.statsCollector.UeStatsCollector;
 import simu5g.stack.ICellularNic;
 
 import simu5g.corenetwork.statsCollector.UeStatsCollector;
 
-// 
+//
 // User Equipment Module
 //
 module Ue
@@ -55,7 +53,7 @@ module Ue
 
         //# Apps
         int numApps = default(0);   // no of apps.
-                                    // Specify the app types in INI file with app[0..1].typename="UdpVideoStreamClient" syntax 
+                                    // Specify the app types in INI file with app[0..1].typename="UdpVideoStreamClient" syntax
 
         //# Transport layer
         bool hasUdp = default(firstAvailableOrEmpty("Udp") != "");
@@ -102,7 +100,7 @@ module Ue
 
         //# layer submodules (must be ordered from lower to upper layers)
 
-        //# link layer 
+        //# link layer
         lo[numLoInterfaces]: <default("LoopbackInterface")> like ILoopbackInterface {
             parameters:
                 @display("p=503.736,589.50397,row,150");
@@ -133,7 +131,7 @@ module Ue
                 @display("p=525,376;q=queue");
         }
 
-        //# transport layer 
+        //# transport layer
         udp: <default(firstAvailableOrEmpty("Udp"))> like IUdp if hasUdp {
             parameters:
                 @display("p=375,226");
@@ -147,7 +145,7 @@ module Ue
                 @display("p=675,226");
         }
 
-        //# app layer 
+        //# app layer
         app[numApps]: <> like IApp {
             @display("p=374.47998,72.479996,row,140");
         }
@@ -179,7 +177,7 @@ module Ue
 
     connections allowunconnected:
 
-        //# 
+        //#
         //# Internal Tcp/Udp applications connections with transport layer
         //#
 
@@ -197,9 +195,9 @@ module Ue
         at.out++ --> sctp.appIn if hasSctp;
         at.in++ <-- sctp.appOut if hasSctp;
 
-        //# 
+        //#
 		//# Internal transport layer connections to network layer
-		//# 
+		//#
 
         udp.ipOut --> tn.in++ if hasUdp;
         udp.ipIn <-- tn.out++ if hasUdp;
@@ -226,7 +224,7 @@ module Ue
         tn.in++ <-- nl.out++;
 
         //#
-        //# Internal link layer connections to network layer  
+        //# Internal link layer connections to network layer
         //#
 
         cellularNic.upperLayerOut --> nl.in++;
