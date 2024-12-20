@@ -13,6 +13,8 @@
 #include "mobility/trafficLightMobility/TrafficLightController.h"
 #include "inet/common/INETMath.h"
 
+namespace simu5g {
+
 Define_Module(TrafficLightMobility);
 
 TrafficLightMobility::TrafficLightMobility()
@@ -162,7 +164,7 @@ void TrafficLightMobility::move()
             angle = M_PI;
 
         auto head = heading_*-1 + rad(angle);
-        head = rad(std::fmod((double)head.get(), M_PI*2));
+        head = rad(fmod((double)head.get(), M_PI*2));
         current_heading_deg_normalized_ = deg(head);
     }
     else
@@ -207,3 +209,6 @@ double TrafficLightMobility::getOrientationAngleDegree()
 
     return rot > 0 ? angleDeg : angleDeg + 180;
 }
+
+} //namespace
+

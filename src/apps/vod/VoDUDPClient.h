@@ -19,9 +19,10 @@
 
 #include <apps/vod/VoDPacket_m.h>
 #include <apps/vod/VoDUDPStruct.h>
-#include <inet/transportlayer/contract/udp/UdpControlInfo.h>
 #include <inet/transportlayer/contract/udp/UdpSocket.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
+
+namespace simu5g {
 
 class VoDUDPClient : public omnetpp::cSimpleModule
 {
@@ -47,6 +48,8 @@ class VoDUDPClient : public omnetpp::cSimpleModule
     virtual void handleMessage(omnetpp::cMessage *msg) override;
     virtual void receiveStream(VoDPacket *msg);
 };
+
+} //namespace
 
 #endif
 

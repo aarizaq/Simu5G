@@ -18,6 +18,8 @@
 #include "stack/mac/layer/LteMacUeD2D.h"
 #include "stack/mac/layer/LteMacEnbD2D.h"
 
+namespace simu5g {
+
 using namespace omnetpp;
 
 LteHarqBufferRxD2D::LteHarqBufferRxD2D(unsigned int num, LteMacBase *owner, MacNodeId srcId, bool isMulticast)
@@ -151,7 +153,7 @@ std::list<Packet *> LteHarqBufferRxD2D::extractCorrectPdus()
                 auto temp = processes_[i]->extractPdu(cw);
                 unsigned int size = temp->getByteLength();
                 auto info = temp->getTag<UserControlInfo>();
-                
+
                 // emit delay statistic
                 if (info->getDirection() == D2D)
                     macUe_emit(macDelayD2D_, (NOW - temp->getCreationTime()).dbl());
@@ -160,23 +162,25 @@ std::list<Packet *> LteHarqBufferRxD2D::extractCorrectPdus()
 
                 // Calculate Throughput by sending the number of bits for this packet
                 totalRcvdBytes_ += size;
+                totalCellRcvdBytes_ += size;
 
                 double den = (NOW - getSimulation()->getWarmupPeriod()).dbl();
 
                 if (den > 0)
                 {
                     double tputSample = (double)totalRcvdBytes_ / den;
+                    double cellTputSample = (double)totalCellRcvdBytes_ / den;
 
                     // emit throughput statistics
                     if (info->getDirection() == D2D)
                     {
-                        check_and_cast<LteMacEnbD2D*>(nodeB_)->emit(macCellThroughputD2D_, (int64_t)size);
+                        check_and_cast<LteMacEnbD2D*>(nodeB_)->emit(macCellThroughputD2D_, cellTputSample);
                         macUe_emit(macThroughputD2D_, tputSample);
 
                     }
                     else
                     {
-                        nodeB_->emit(macCellThroughput_, (int64_t)size);
+                        nodeB_->emit(macCellThroughput_, cellTputSample);
                         macUe_emit(macThroughput_, tputSample);
                     }
                 }
@@ -197,3 +201,6 @@ std::list<Packet *> LteHarqBufferRxD2D::extractCorrectPdus()
 LteHarqBufferRxD2D::~LteHarqBufferRxD2D()
 {
 }
+
+} //namespace
+

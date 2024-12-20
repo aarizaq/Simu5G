@@ -14,6 +14,8 @@
 #include "stack/phy/das/DasFilter.h"
 #include "common/LteCommon.h"
 
+namespace simu5g {
+
 Define_Module(LtePhyEnb);
 
 using namespace omnetpp;
@@ -51,7 +53,6 @@ void LtePhyEnb::initialize(int stage)
     {
         // get local id
         nodeId_ = getAncestorPar("macNodeId");
-        emit(macNodeIdSignal_, nodeId_);
         EV << "Local MacNodeId: " << nodeId_ << endl;
         cellInfo_ = getCellInfo(nodeId_);
         if (cellInfo_ != NULL)
@@ -487,4 +488,6 @@ void LtePhyEnb::initializeFeedbackComputation()
 
     EV << "Feedback Computation \"" << name << "\" loaded." << endl;
 }
+
+} //namespace
 

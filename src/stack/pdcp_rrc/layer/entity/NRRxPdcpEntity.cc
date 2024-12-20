@@ -11,6 +11,8 @@
 
 #include "stack/pdcp_rrc/layer/entity/NRRxPdcpEntity.h"
 
+namespace simu5g {
+
 Define_Module(NRRxPdcpEntity);
 
 NRRxPdcpEntity::NRRxPdcpEntity() : t_reordering_(this)
@@ -54,7 +56,7 @@ void NRRxPdcpEntity::handlePdcpSdu(Packet* pdcpSdu)
     if (rcvdSno < rxWindowDesc_.rxDeliv_)
     {
         EV << NOW << " NRRxPdcpEntity::handlePdcpSdu - the SN[" << rcvdSno << "] <  was already considered for reordering. Discard the SDU" << endl;
-        dropAndDelete(pdcpSdu);
+        delete pdcpSdu;
         return;
     }
 
@@ -63,7 +65,7 @@ void NRRxPdcpEntity::handlePdcpSdu(Packet* pdcpSdu)
     if (index >= rxWindowDesc_.windowSize_)
     {
         EV << NOW << " NRRxPdcpEntity::handlePdcpSdu - the SN[" << rcvdSno << "] <  is too large with respect to the window size. Advance the window and deliver out-of-sequence SDUs" << endl;
-        dropAndDelete(pdcpSdu);
+        delete pdcpSdu;
         return;
     }
 
@@ -71,7 +73,7 @@ void NRRxPdcpEntity::handlePdcpSdu(Packet* pdcpSdu)
     if (received_.at(index))
     {
         EV << NOW << " NRRxPdcpEntity::handlePdcpSdu - the SN[" << rcvdSno << "] <  has already been received. Discard the SDU" << endl;
-        dropAndDelete(pdcpSdu);
+        delete pdcpSdu;
         return;
     }
 
@@ -194,3 +196,6 @@ void NRRxPdcpEntity::handleMessage(cMessage *msg)
         delete msg;
     }
 }
+
+} //namespace
+

@@ -37,11 +37,11 @@
 #include "common/features.h"
 #include "common/LteCommonEnum_m.h"
 
+namespace simu5g {
 
 class Binder;
 class CellInfo;
 class LteCellInfo;
-class UserControlInfo;
 class LteNodeTable;
 class LteMacEnb;
 class LteMacBase;
@@ -344,9 +344,7 @@ const LtePhyFrameTable phytypes[] = {
     ELEM(BROADCASTPKT),
     ELEM(FEEDBACKPKT),
     ELEM(HANDOVERPKT),
-    ELEM(HARQPKT),
     ELEM(GRANTPKT),
-    ELEM(RACPKT),
     ELEM(D2DMODESWITCHPKT),
     ELEM(UNKNOWN_TYPE)
 };
@@ -588,14 +586,14 @@ typedef std::vector<BackgroundScheduler*> BackgroundSchedulerList;
 
 typedef std::vector<std::vector<std::vector<double> > > BlerCurves;
 
-typedef struct {
+struct SlotFormat {
     bool tdd;
     unsigned int numDlSymbols;
     unsigned int numUlSymbols;
     unsigned int numFlexSymbols;
-} SlotFormat;
+};
 
-typedef struct {
+struct CarrierInfo {
     double carrierFrequency;
     unsigned int numBands;
     unsigned int firstBand;
@@ -603,7 +601,7 @@ typedef struct {
     BandLimitVector bandLimit;
     NumerologyIndex numerologyIndex;
     SlotFormat slotFormat;
-} CarrierInfo;
+};
 typedef std::map<double, CarrierInfo> CarrierInfoMap;
 
 
@@ -634,7 +632,6 @@ typedef std::map<std::string, omnetpp::cMsgPar> ParameterMap;
  *********************/
 
 const std::string dirToA(Direction dir);
-const std::string destSrcInfo(UserControlInfo* info);
 const std::string d2dModeToA(LteD2DMode mode);
 const std::string allocationTypeToA(RbAllocationType type);
 const std::string modToA(LteMod mod);
@@ -656,7 +653,6 @@ ApplicationType aToApplicationType(std::string s);
 const std::string applicationTypeToA(std::string s);
 const std::string lteTrafficClassToA(LteTrafficClass type);
 LteTrafficClass aToLteTrafficClass(std::string s);
-const std::string phyFrameTypeToA(const unsigned int r);
 const std::string phyFrameTypeToA(const LtePhyFrameType r);
 LtePhyFrameType aToPhyFrameType(std::string s);
 const std::string rlcTypeToA(LteRlcType type);
@@ -757,6 +753,8 @@ std::vector<T> getTagsWithInherit(inet::Packet *pkt)
     }
     return t;
 }
+
+} //namespace
 
 #endif
 

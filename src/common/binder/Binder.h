@@ -23,6 +23,8 @@
 #include "stack/mac/layer/LteMacBase.h"
 #include "stack/backgroundTrafficGenerator/generators/TrafficGeneratorBase.h"
 
+namespace simu5g {
+
 class UeStatsCollector;
 
 /**
@@ -300,12 +302,6 @@ class Binder : public omnetpp::cSimpleModule
      * @return OmnetId of the module
      */
     OmnetId getOmnetId(MacNodeId nodeId);
-
-
-    /**
-     * getMasterNodeId() returns master_id of the sender node
-     */
-    MacNodeId getMasterNodeId(const MacNodeId& senderId);
 
     /*
      * get iterators for the list of nodes
@@ -644,5 +640,7 @@ class Binder : public omnetpp::cSimpleModule
 
 
 };
+
+} //namespace
 
 #endif

@@ -21,6 +21,8 @@
 #include "x2/packet/X2ControlInfo_m.h"
 #include "corenetwork/trafficFlowFilter/TftControlInfo_m.h"
 
+namespace simu5g {
+
 using namespace inet;
 
 const inet::Protocol LteProtocol::ipv4uu("ipv4uu", "IPv4 (LTE Uu link)");
@@ -111,12 +113,6 @@ const std::string dirToA(Direction dir)
         default:
             return "Unrecognized";
     }
-}
-
-const std::string destSrcInfo(UserControlInfo* info){
-    std::stringstream s;
-    s << "[" << info->getSourceId() << "--" << phyFrameTypeToA(info->getFrameType()) << "-->" << info->getDestId() << "]";
-    return s.str();
 }
 
 const std::string d2dModeToA(LteD2DMode mode)
@@ -276,11 +272,6 @@ Remote aToDas(std::string s)
         i++;
     }
     return UNKNOWN_RU;
-}
-
-const std::string phyFrameTypeToA(const unsigned int r)
-{
-    return phyFrameTypeToA((LtePhyFrameType)r);
 }
 
 const std::string phyFrameTypeToA(const LtePhyFrameType r)
@@ -708,4 +699,6 @@ void removeAllSimu5GTags(inet::Packet *pkt)
     pkt->removeTagIfPresent<UserControlInfo>();
     pkt->removeTagIfPresent<LteControlInfo>();
 }
+
+} //namespace
 

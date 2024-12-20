@@ -19,6 +19,8 @@
 #include "corenetwork/statsCollector/BaseStationStatsCollector.h"
 #include "corenetwork/statsCollector/UeStatsCollector.h"
 
+namespace simu5g {
+
 using namespace std;
 using namespace inet;
 
@@ -377,14 +379,6 @@ OmnetId Binder::getOmnetId(MacNodeId nodeId)
     if(it != nodeIds_.end())
         return it->second;
     return 0;
-}
-
-MacNodeId Binder::getMasterNodeId(const MacNodeId& senderId) {
-    LteMacBase* otherMacBase = getMacFromMacNodeId(senderId);
-    if (otherMacBase == nullptr){
-        return 0;
-    }
-    return (MacNodeId)otherMacBase->getMacCellId();
 }
 
 std::map<int, OmnetId>::const_iterator Binder::getNodeIdListBegin()
@@ -1359,4 +1353,5 @@ RanNodeType Binder::getBaseStationTypeById(MacNodeId cellId)
     }
 }
 
+} //namespace
 

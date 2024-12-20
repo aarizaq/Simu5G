@@ -15,6 +15,8 @@
 #include "stack/mac/layer/LteMacBase.h"
 #include "stack/mac/buffer/harq/LteHarqProcessRx.h"
 
+namespace simu5g {
+
 class LteMacBase;
 class LteHarqProcessRx;
 
@@ -48,6 +50,7 @@ class LteHarqBufferRx
     bool isMulticast_;
 
     //Statistics
+    static unsigned int totalCellRcvdBytes_;
     unsigned int totalRcvdBytes_ = 0;
     omnetpp::simsignal_t macDelay_;
     omnetpp::simsignal_t macCellThroughput_;
@@ -190,5 +193,7 @@ class LteHarqBufferRx
 
 
 };
+
+} //namespace
 
 #endif

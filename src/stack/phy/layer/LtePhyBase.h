@@ -28,6 +28,8 @@
 #include "stack/phy/ChannelModel/LteChannelModel.h"
 #include "stack/phy/feedback/LteFeedbackComputationRealistic.h"
 
+namespace simu5g {
+
 /**
  * @class LtePhy
  * @brief Physical layer of Lte Nic.
@@ -134,7 +136,6 @@ class LtePhyBase : public ChannelAccess
     omnetpp::simsignal_t averageCqiDl_;
     omnetpp::simsignal_t averageCqiUl_;
     omnetpp::simsignal_t averageCqiD2D_;
-    omnetpp::simsignal_t macNodeIdSignal_;
 
     // User that are trasmitting (uplink)
     //receiveng(downlink) current packet
@@ -350,5 +351,7 @@ class LtePhyBase : public ChannelAccess
      */
     MacNodeId getMacNodeId() { return nodeId_; }
 };
+
+} //namespace
 
 #endif  /* _LTE_AIRPHYBASE_H_ */

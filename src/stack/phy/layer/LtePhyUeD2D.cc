@@ -14,6 +14,8 @@
 #include "stack/phy/packet/LteFeedbackPkt.h"
 #include "stack/d2dModeSelection/D2DModeSelectionBase.h"
 
+namespace simu5g {
+
 Define_Module(LtePhyUeD2D);
 using namespace inet;
 
@@ -36,7 +38,6 @@ void LtePhyUeD2D::initialize(int stage)
         d2dTxPower_ = par("d2dTxPower");
         d2dMulticastEnableCaptureEffect_ = par("d2dMulticastCaptureEffect");
         d2dDecodingTimer_ = nullptr;
-        d2dEnforceEnbBoundOnSideLink = par("d2dEnforceEnbBoundOnSideLink");
     }
 }
 
@@ -86,8 +87,7 @@ void LtePhyUeD2D::handleAirFrame(cMessage* msg)
     }
     connectedNodeId_ = masterId_;
     LteAirFrame* frame = check_and_cast<LteAirFrame*>(msg);
-    EV << "LtePhyUeD2D: UE "<< nodeId_ << " received new LteAirFrame with ID " << frame->getId() \
-            << " " << destSrcInfo(lteInfo) << " from channel (masterId " << masterId_ << ")" << endl;
+    EV << "LtePhyUeD2D: received new LteAirFrame with ID " << frame->getId() << " from channel" << endl;
 
     int sourceId = lteInfo->getSourceId();
     if(binder_->getOmnetId(sourceId) == 0 )
@@ -181,31 +181,6 @@ void LtePhyUeD2D::handleAirFrame(cMessage* msg)
         // UE is not (anymore) associated with any eNB/gNB and all harqBuffers are already deleted.
         // Handing this data packet to the MAC layer will lead to null pointers.
         EV << "LtePhyUeD2D: UE "<< nodeId_ << " received data packet while not associated to any base station. (masterId " << masterId_ << "). Drop it." << endl;
-        delete lteInfo;
-        delete frame;
-        return;
-    }
-
-    if (d2dEnforceEnbBoundOnSideLink){
-        // In normal a setup neighboring base stations should have different carrier frequencies and
-        // thus communication between UE's associated with different eNB's should not be able to talk
-        // to each other over sidelink. Hack: This switch checks if the UE's are in the same eNB even if
-        // both eNB's are on the same frequncy.
-
-        // check if sending and receiving node are in the same enb
-        MacNodeId other_master_id = binder_->getMasterNodeId(lteInfo->getSourceId());
-        if (masterId_ != other_master_id){
-            EV << "D2D frame from UE  that is associated with a different base station -> ignore frame" << endl;
-            EV << "Current MasterID: " << masterId_ << " Sender MasterID: " << other_master_id << endl;
-            delete lteInfo;
-            delete frame;
-            return;
-        }
-    }
-
-
-    if (carrierFreq != primaryChannelModel_->getCarrierFrequency()){
-        EV << "Frame is on wrong carrier-> ignore frame" << endl;
         delete lteInfo;
         delete frame;
         return;
@@ -410,7 +385,7 @@ void LtePhyUeD2D::handleUpperMessage(cMessage* msg)
     frame->setControlInfo(lteInfo.get()->dup());
 
     EV << "LtePhyUeD2D::handleUpperMessage - " << nodeTypeToA(nodeType_) << " with id " << nodeId_
-       << " sending message (LteAirFrame with ID "<< frame->getId() << ", "<< phyFrameTypeToA(lteInfo->getFrameType()) <<") to the air channel. Dest=" << lteInfo->getDestId() << endl;
+       << " sending message to the air channel. Dest=" << lteInfo->getDestId() << endl;
 
     // if this is a multicast/broadcast connection, send the frame to all neighbors in the hearing range
     // otherwise, send unicast to the destination
@@ -677,3 +652,6 @@ void LtePhyUeD2D::finish()
         LtePhyUe::finish();
     }
 }
+
+} //namespace
+

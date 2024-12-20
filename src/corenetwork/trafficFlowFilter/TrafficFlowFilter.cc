@@ -14,6 +14,8 @@
 #include <inet/networklayer/common/L3AddressResolver.h>
 #include <inet/networklayer/ipv4/Ipv4Header_m.h>
 
+namespace simu5g {
+
 Define_Module(TrafficFlowFilter);
 
 using namespace inet;
@@ -57,7 +59,7 @@ void TrafficFlowFilter::initialize(int stage)
         // obtain the IP address of externel MEC applications (if any)
 
         std::string extAddress = getAncestorPar("extMeAppsAddress").stringValue();
-        if(extAddress != "")
+        if(strcmp(extAddress.c_str(), "") != 0)
         {
             std::vector<std::string> extAdd =  cStringTokenizer(extAddress.c_str(), "/").asVector();
             if(extAdd.size() != 2){
@@ -72,7 +74,7 @@ void TrafficFlowFilter::initialize(int stage)
     if(getParentModule()->hasPar("mecHost")){
 
         meHost = getParentModule()->par("mecHost").stringValue();
-        if(isBaseStation(ownerType_) &&  meHost != "")
+        if(isBaseStation(ownerType_) &&  strcmp(meHost.c_str(), ""))
         {
             std::stringstream meHostName;
             meHostName << meHost.c_str() << ".virtualisationInfrastructure";
@@ -228,4 +230,6 @@ void TrafficFlowFilter::finish()
     if (gateway_ != nullptr)
         delete[] gateway_;
 }
+
+} //namespace
 

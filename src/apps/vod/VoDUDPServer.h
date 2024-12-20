@@ -16,7 +16,6 @@
 
 #include <omnetpp.h>
 
-#include <inet/transportlayer/contract/udp/UdpControlInfo.h>
 #include <inet/transportlayer/contract/udp/UdpSocket.h>
 #include <inet/networklayer/common/L3AddressResolver.h>
 
@@ -24,6 +23,8 @@
 #include "apps/vod/VoDUDPStruct.h"
 #include "apps/vod/VoDPacket_m.h"
 #include "apps/vod/M1Message_m.h"
+
+namespace simu5g {
 
 class VoDUDPServer : public omnetpp::cSimpleModule
 {
@@ -103,5 +104,7 @@ class VoDUDPServer : public omnetpp::cSimpleModule
     virtual void handleMessage(omnetpp::cMessage*);
     virtual void handleSVCMessage(omnetpp::cMessage*);
 };
+
+} //namespace
 
 #endif

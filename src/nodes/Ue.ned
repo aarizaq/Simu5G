@@ -17,7 +17,7 @@ import inet.common.MessageDispatcher;
 import inet.common.packet.recorder.PcapRecorder;
 import inet.linklayer.contract.IEthernetInterface;
 import inet.linklayer.contract.ILoopbackInterface;
-import inet.linklayer.contract.IEthernetLayer;
+import inet.linklayer.ethernet.contract.IEthernetLayer;
 import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
 import inet.networklayer.contract.INetworkLayer;
@@ -27,7 +27,6 @@ import inet.transportlayer.contract.IUdp;
 import simu5g.corenetwork.statsCollector.UeStatsCollector;
 import simu5g.stack.ICellularNic;
 
-import simu5g.corenetwork.statsCollector.UeStatsCollector;
 
 //
 // User Equipment Module

@@ -16,6 +16,8 @@
 #include "stack/phy/packet/LteFeedbackPkt.h"
 #include "stack/phy/feedback/LteDlFeedbackGenerator.h"
 
+namespace simu5g {
+
 Define_Module(LtePhyUe);
 
 using namespace inet;
@@ -131,7 +133,6 @@ void LtePhyUe::initialize(int stage)
             nodeId_ = getAncestorPar("nrMacNodeId");
         else
             nodeId_ = getAncestorPar("macNodeId");
-        emit(macNodeIdSignal_, nodeId_);
         EV << "Local MacNodeId: " << nodeId_ << endl;
     }
     else if (stage == inet::INITSTAGE_PHYSICAL_LAYER)
@@ -926,3 +927,6 @@ void LtePhyUe::finish()
         }
     }
 }
+
+} //namespace
+

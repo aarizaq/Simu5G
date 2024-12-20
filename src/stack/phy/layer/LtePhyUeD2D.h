@@ -14,15 +14,14 @@
 
 #include "stack/phy/layer/LtePhyUe.h"
 
+namespace simu5g {
+
 class LtePhyUeD2D : public LtePhyUe
 {
   protected:
 
     // D2D Tx Power
     double d2dTxPower_;
-
-    // Do not allow D2D communication between UE's associated with different eNB's.
-    bool d2dEnforceEnbBoundOnSideLink;
 
     /*
      * Capture Effect for D2D Multicast communications
@@ -60,5 +59,7 @@ class LtePhyUeD2D : public LtePhyUe
         return txPower_;
     }
 };
+
+} //namespace
 
 #endif  /* _LTE_AIRPHYUED2D_H_ */

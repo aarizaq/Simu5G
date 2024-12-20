@@ -13,11 +13,13 @@
 #include "stack/mac/scheduler/LteSchedulerEnb.h"
 #include "stack/backgroundTrafficGenerator/BackgroundTrafficManager.h"
 
+namespace simu5g {
+
 using namespace omnetpp;
 
 void LteMaxCi::prepareSchedule()
 {
-    EV << NOW << " LteMaxCI::schedule Enb" << eNbScheduler_->mac_->getMacNodeId() << endl;
+    EV << NOW << " LteMaxCI::schedule " << eNbScheduler_->mac_->getMacNodeId() << endl;
 
     if (binder_ == nullptr)
         binder_ = getBinder();
@@ -188,4 +190,6 @@ void LteMaxCi::commitSchedule()
 {
     *activeConnectionSet_ = activeConnectionTempSet_;
 }
+
+} //namespace
 

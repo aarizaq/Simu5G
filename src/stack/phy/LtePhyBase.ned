@@ -22,7 +22,7 @@ simple LtePhyBase like LtePhy
         double ueTxPower @unit(dBm) = default(26dBm);
         double eNodeBTxPower @unit(dBm) = default(46dBm);
         double microTxPower @unit(dBm) = default(30dBm);
-        string txDirection = default("OMNI");
+        string txDirection @enum(ANISOTROPIC,OMNI) = default("OMNI");
         double txAngle @unit(deg) = default(0deg);
 
         bool dynamicCellAssociation = default(false);
@@ -34,9 +34,6 @@ simple LtePhyBase like LtePhy
         // TODO move to LtePhyUeD2D module
         bool enableMulticastD2DRangeCheck = default(false);
         double multicastD2DRange @unit(m) = default(1000m);
-        
-        @signal[macNodeId];
-        @statistic[macNodeId](title="MacNodeId provided at object construction by the Binder"; unit=""; source="macNodeId"; record=last);
 
     gates:
         input upperGateIn;       // from upper layer

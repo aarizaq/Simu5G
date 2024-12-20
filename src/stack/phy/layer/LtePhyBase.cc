@@ -12,6 +12,8 @@
 #include "stack/phy/layer/LtePhyBase.h"
 #include "common/LteCommon.h"
 
+namespace simu5g {
+
 using namespace omnetpp;
 
 short LtePhyBase::airFramePriority_ = 10;
@@ -31,8 +33,6 @@ void LtePhyBase::initialize(int stage)
 
     if (stage == inet::INITSTAGE_LOCAL)
     {
-        macNodeIdSignal_ = registerSignal("macNodeId");
-
         binder_ = getBinder();
         cellInfo_ = nullptr;
         // get gate ids
@@ -158,7 +158,7 @@ void LtePhyBase::handleUpperMessage(cMessage* msg)
     frame->setControlInfo(lteInfo.get()->dup());
 
     EV << "LtePhy: " << nodeTypeToA(nodeType_) << " with id " << nodeId_
-       << " sending message (" << phyFrameTypeToA(lteInfo->getFrameType()) << ") to the air channel. Dest=" << lteInfo->getDestId() << endl;
+       << " sending message to the air channel. Dest=" << lteInfo->getDestId() << endl;
     sendUnicast(frame);
 }
 
@@ -307,3 +307,6 @@ int LtePhyBase::getReceiverGateIndex(const omnetpp::cModule *receiver, bool isNr
     }
     return gate;
 }
+
+} //namespace
+

@@ -27,11 +27,11 @@
 #include "nodes/mec/MECPlatform/MEAppPacket_Types.h"
 #include "apps/mec/WarningAlert/packets/WarningAlertPacket_m.h"
 
+namespace simu5g {
 
 using namespace omnetpp;
 
-typedef struct
-{
+struct FragmentedFrameStatus {
     int frameNumber;
     int frameSize;
     int remainingFragments;
@@ -42,8 +42,7 @@ typedef struct
 
     int remainingFrameBytes;
     int remainingFramesSlices;
-
-} FragmentedFrameStatus;
+};
 
 
 /**
@@ -62,29 +61,26 @@ class RTVideoStreamingSender: public cSimpleModule
     int deviceAppPort_;
     inet::L3Address deviceAppAddress_;
 
-    char* sourceSimbolicAddress = nullptr;            //Ue[x]
-    char* deviceSimbolicAppAddress_ = nullptr;        //meHost.virtualisationInfrastructure
+    char* sourceSimbolicAddress;            //Ue[x]
+    char* deviceSimbolicAppAddress_;        //meHost.virtualisationInfrastructure
 
     // MEC application endPoint (returned by the device app)
     inet::L3Address mecAppAddress_;
-    int mecAppPort_ = -1;
+    int mecAppPort_;
 
     std::string mecAppName;
 
     //scheduling
-    cMessage *selfRTVideoStreamingAppStart_ = nullptr;
-    cMessage *selfRTVideoStreamingAppStop_ = nullptr;
+    cMessage *selfRTVideoStreamingAppStart_;
+    cMessage *selfRTVideoStreamingAppStop_;
 
-    cMessage *selfMecAppStart_ = nullptr;
-    cMessage *selfMecAppStop_ = nullptr;
+    cMessage *selfMecAppStart_;
+    cMessage *selfMecAppStop_;
 
-    cMessage* selfSessionStart_ = nullptr;
-    cMessage* selfSessionStop_ = nullptr;
-
-    bool stop_ = false;
+    cMessage* selfSessionStart_;
+    cMessage* selfSessionStop_;
 
     inet::UdpSocket videoStreamSocket_;
-    int port = -1;
 
     const char* fileName;
     /**
@@ -92,31 +88,18 @@ class RTVideoStreamingSender: public cSimpleModule
      */
     std::ifstream _inputFileStream;
 
-    bool pendingStartRequest;
-    bool moduleCreated;
-
     int mtu_;
-    cMessage* _nextFrame = nullptr;
-
-    /**
-     * duration of each session
-     */
-    double sessionDuration_ = -1;
-
-    /**
-     * period between sessions
-     */
-    double periodBetweenSession_ = -1;
+    cMessage* _nextFrame;
 
     /**
      * The initial delay of the mpeg video.
      */
-    double _initialDelay = -1;
+    double _initialDelay;
 
     /**
      * The number of frames per second of the video.
      */
-    double _framesPerSecond = -1;
+    double _framesPerSecond;
 
     /**
      * The number of the current frame. Needed for calculating
@@ -187,5 +170,6 @@ class RTVideoStreamingSender: public cSimpleModule
         void initializeVideoStream();
 };
 
+} //namespace
 
 #endif /* APPS_MEC_RTVIDEOSTREAMINGSENDER_H_ */

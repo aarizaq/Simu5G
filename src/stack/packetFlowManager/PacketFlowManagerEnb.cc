@@ -20,6 +20,8 @@
 #include "common/LteControlInfo.h"
 #include <sstream>
 
+namespace simu5g {
+
 Define_Module(PacketFlowManagerEnb);
 
 PacketFlowManagerEnb::PacketFlowManagerEnb()
@@ -594,7 +596,7 @@ void PacketFlowManagerEnb::macPduArrived(inet::Ptr<const LteMacPdu> macPdu)
         // === for each RLC PDU SN, recover the set of RLC SDU (PDCP PDU) SN === //
 
         SequenceNumberSet::iterator it = rlcSnoSet.begin();
-        
+
         for (; it != rlcSnoSet.end(); ++it)
         {
             // for each RLC PDU
@@ -1067,16 +1069,8 @@ uint64_t PacketFlowManagerEnb::getDataVolume(MacNodeId nodeId, Direction dir)
         return node->second.dlBits;
     else if(dir == UL)
         return node->second.ulBits;
-    else {
-        std::string direction;
-        if (D2D == dir)
-            direction = "D2D";
-        else if (D2D_MULTI == dir)
-            direction = "D2D_MULTI";
-        else
-            direction = "UNKNOWN_DIRECTION";
-       throw cRuntimeError("%s::getDataVolume - Wrong direction", direction.c_str());
-    }
+    else
+       throw cRuntimeError("PacketFlowManagerEnb::getDataVolume - Wrong direction");
 }
 
 void PacketFlowManagerEnb::resetDataVolume(MacNodeId nodeId, Direction dir)
@@ -1088,16 +1082,8 @@ void PacketFlowManagerEnb::resetDataVolume(MacNodeId nodeId, Direction dir)
        node->second.dlBits = 0;
     else if(dir == UL)
        node->second.ulBits = 0;
-    else {
-        std::string direction;
-        if (D2D == dir)
-            direction = "D2D";
-        else if (D2D_MULTI == dir)
-            direction = "D2D_MULTI";
-        else
-            direction = "UNKNOWN_DIRECTION";
-        throw cRuntimeError("%s::getDataVolume - Wrong direction", direction.c_str());
-    }
+    else
+      throw cRuntimeError("PacketFlowManagerEnb::getDataVolume - Wrong direction");
 }
 
 void PacketFlowManagerEnb::resetDataVolume(MacNodeId nodeId)
@@ -1113,4 +1099,5 @@ void PacketFlowManagerEnb::finish()
 {
 }
 
+} //namespace
 

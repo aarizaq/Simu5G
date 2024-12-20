@@ -11,16 +11,26 @@
 
 package simu5g.nodes.mec.VirtualisationInfrastructure;
 
-
 import inet.common.MessageDispatcher;
-import inet.linklayer.contract.IEthernetInterface;
-import inet.linklayer.contract.ILoopbackInterface;
-import inet.linklayer.contract.IEthernetLayer;
 import inet.linklayer.ppp.PppInterface;
 import inet.networklayer.common.InterfaceTable;
 import inet.networklayer.contract.INetworkLayer;
 import inet.transportlayer.tcp.Tcp;
 import inet.transportlayer.udp.Udp;
+
+import inet.linklayer.contract.IEthernetInterface;
+import inet.linklayer.contract.IEthernetLayer;
+import inet.linklayer.contract.IIeee8021qLayer;
+import inet.linklayer.contract.IIeee8021rLayer;
+import inet.linklayer.contract.IIeee8022Llc;
+import inet.linklayer.contract.ILoopbackInterface;
+import inet.linklayer.contract.IPppInterface;
+import inet.linklayer.contract.ITunnelInterface;
+import inet.linklayer.contract.IVirtualInterface;
+import inet.linklayer.contract.IWirelessInterface;
+import inet.networklayer.common.InterfaceTable;
+import inet.node.contract.IEthernetNetworkNode;
+import inet.protocolelement.contract.IProtocolLayer;
 
 
 //#
@@ -30,7 +40,7 @@ module VirtualisationInfrastructure
 {
     parameters:
         @networkNode();
-        @display("bgb=1350,750;i=block/dispatch");
+        @display("bgb=1349,1320;i=block/dispatch");
         @figure[applicationLayer](type=rectangle; pos=250,6; size=600,130; lineColor=#808080; cornerRadius=5; fillColor=#ffff00; fillOpacity=0.1);
         @figure[applicationLayer.title](type=text; pos=845,11; anchor=ne; text="application layer");
         @figure[transportLayer](type=rectangle; pos=250,156; size=600,130; fillColor=#ff0000; lineColor=#808080; cornerRadius=5; fillOpacity=0.1);
@@ -72,23 +82,17 @@ module VirtualisationInfrastructure
         //# link-layer modules
         //#
         pppIf[sizeof(ppp)]: PppInterface {
-            @display("p=736.2375,660.075");
+            @display("p=911,1065");
         }
 
         // ethernet interface used for communicating with external applications in emulation mode
         extEth[numExtEthInterfaces]: <default("ExtLowerEthernetInterface")> like IEthernetInterface {
             parameters:
-                @display("p=326.6525,660.075,row,150;q=txQueue");
+                @display("p=374,1043,row,150;q=txQueue");
         }
-        encap: <default("EthernetEncapsulation")> like IEthernetLayer if typename != "" {
-            parameters:
-                registerProtocol = true;
-                @display("p=326.6525,511.135");
-        }
-
         lo: <default("LoopbackInterface")> like ILoopbackInterface {
             parameters:
-                @display("p=548.37,660.075,row,150");
+                @display("p=657,1083,row,150");
         }
 
         //#
@@ -130,8 +134,25 @@ module VirtualisationInfrastructure
                 @display("p=550,446;b=600,5,,,,1");
         }
 
-    connections allowunconnected:
+        cb: MessageDispatcher {
+            @display("p=750,600;b=1000,5");
+        }
+        bridging: <default("")> like IProtocolLayer if typename != "" {
+            @display("p=459,682");
+        }
+        bl: MessageDispatcher {
+            @display("p=750,750;b=1000,5");
+        }
+        ethernet: <default(sizeof(extEth) > 0 ? "EthernetEncapsulation" : "")> like IEthernetLayer if typename != "" {
+            @display("p=375,825");
+        }
 
+        li: MessageDispatcher {
+            @display("p=750,900;b=1000,5,,,,1");
+        }
+
+
+    connections allowunconnected:
 
         for i=0..numIndependentMecApp -1 {
             at.out++ --> independentMecAppOut++;
@@ -152,6 +173,20 @@ module VirtualisationInfrastructure
         at.out++ --> tcp.appIn;
         at.in++ <-- tcp.appOut;
 
+        bl.out++ --> li.in++;
+        li.out++ --> bl.in++;
+
+        nl.out++ --> cb.in++;
+        cb.out++ --> nl.in++;
+
+        cb.out++ --> bridging.upperLayerIn if exists(bridging);
+        bridging.upperLayerOut --> cb.in++ if exists(bridging);
+
+        bridging.lowerLayerOut --> bl.in++ if exists(bridging);
+        bl.out++ --> bridging.lowerLayerIn if exists(bridging);
+
+        cb.out++ --> bl.in++ if !exists(bridging);
+        bl.out++ --> cb.in++ if !exists(bridging);
 
         //#
         //# Transport layer to network layer connections
@@ -179,18 +214,19 @@ module VirtualisationInfrastructure
         ipv6.transportOut --> tn.in++ if hasIpv6;
 
         for i=0..sizeof(ppp)-1 {
-            pppIf[i].upperLayerOut --> nl.in++;
-            pppIf[i].upperLayerIn <-- nl.out++;
+            pppIf[i].upperLayerOut --> li.in++;
+            pppIf[i].upperLayerIn <-- li.out++;
             pppIf[i].phys <--> ppp++;
         }
+        
+        bl.out++ --> ethernet.upperLayerIn if exists(ethernet);
+        ethernet.upperLayerOut --> bl.in++ if exists(ethernet);
 
         for i=0..numExtEthInterfaces-1 {
-            encap.lowerLayerOut --> extEth[i].upperLayerIn;
-            encap.lowerLayerIn <-- extEth[i].upperLayerOut;
+            li.out++ --> extEth[i].upperLayerIn;
+            li.in++ <-- extEth[i].upperLayerOut;
         }
-        encap.upperLayerOut --> nl.in++ if numExtEthInterfaces != 0;
-        encap.upperLayerIn <-- nl.out++ if numExtEthInterfaces != 0;
 
-        nl.out++ --> lo.upperLayerIn;
-        lo.upperLayerOut --> nl.in++;
+        li.out++ --> lo.upperLayerIn;
+        lo.upperLayerOut --> li.in++;
 }
