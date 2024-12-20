@@ -138,13 +138,13 @@ module VirtualisationInfrastructure
             @display("p=750,600;b=1000,5");
         }
         bridging: <default("")> like IProtocolLayer if typename != "" {
-            @display("p=459,682");
+            @display("p=548,672");
         }
         bl: MessageDispatcher {
             @display("p=750,750;b=1000,5");
         }
         ethernet: <default(sizeof(extEth) > 0 ? "EthernetEncapsulation" : "")> like IEthernetLayer if typename != "" {
-            @display("p=375,825");
+            @display("p=525,816");
         }
 
         li: MessageDispatcher {
@@ -218,9 +218,14 @@ module VirtualisationInfrastructure
             pppIf[i].upperLayerIn <-- li.out++;
             pppIf[i].phys <--> ppp++;
         }
-        
+
+
         bl.out++ --> ethernet.upperLayerIn if exists(ethernet);
         ethernet.upperLayerOut --> bl.in++ if exists(ethernet);
+
+
+        ethernet.lowerLayerOut --> li.in++ if exists(ethernet);
+        li.out++ --> ethernet.lowerLayerIn if exists(ethernet);
 
         for i=0..numExtEthInterfaces-1 {
             li.out++ --> extEth[i].upperLayerIn;
