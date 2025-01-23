@@ -17,7 +17,7 @@ import inet.common.MessageDispatcher;
 import inet.common.packet.recorder.PcapRecorder;
 import inet.linklayer.contract.IEthernetInterface;
 import inet.linklayer.contract.ILoopbackInterface;
-import inet.linklayer.ethernet.contract.IEthernetLayer;
+import inet.linklayer.ethernet.contract.IEthernetMacLayer;
 import inet.mobility.contract.IMobility;
 import inet.networklayer.common.InterfaceTable;
 import inet.networklayer.contract.INetworkLayer;
@@ -26,7 +26,11 @@ import inet.transportlayer.contract.ITcp;
 import inet.transportlayer.contract.IUdp;
 import simu5g.corenetwork.statsCollector.UeStatsCollector;
 import simu5g.stack.ICellularNic;
-
+import inet.protocolelement.contract.IProtocolLayer;
+import inet.linklayer.contract.IEthernetLayer;
+import inet.linklayer.contract.IIeee8021qLayer;
+import inet.linklayer.contract.IIeee8021rLayer;
+import inet.linklayer.contract.IIeee8022Llc;
 
 //
 // User Equipment Module
@@ -35,7 +39,7 @@ module Ue
 {
     parameters:
         @networkNode();
-        @display("i=device/pocketpc;bgb=858.888,659.568");
+        @display("i=device/pocketpc;bgb=1374,1114");
         @figure[applicationLayer](type=rectangle; pos=250,6; size=600,130; lineColor=#808080; cornerRadius=5; fillColor=#ffff00; fillOpacity=0.1);
         @figure[applicationLayer.title](type=text; pos=845,11; anchor=ne; text="application layer");
         @figure[transportLayer](type=rectangle; pos=250,156; size=600,130; fillColor=#ff0000; lineColor=#808080; cornerRadius=5; fillOpacity=0.1);
@@ -102,24 +106,18 @@ module Ue
         //# link layer
         lo[numLoInterfaces]: <default("LoopbackInterface")> like ILoopbackInterface {
             parameters:
-                @display("p=503.736,589.50397,row,150");
+                @display("p=607,1010,row,150");
         }
         cellularNic: <nicType> like ICellularNic {
             nodeType = parent.nodeType;
-            @display("p=355.152,589.50397");
+            @display("p=374,1026");
         }
 
         //# ethernet interface used for communicating with external applications in emulation mode
         eth[numEthInterfaces]: <default("ExtLowerEthernetInterface")> like IEthernetInterface {
             parameters:
-                @display("p=674.06396,589.50397,row,150;q=txQueue");
+                @display("p=831,1008,row,150;q=txQueue");
         }
-        encap: <default("EthernetEncapsulation")> like IEthernetLayer if typename != "" {
-            parameters:
-                registerProtocol = true;
-                @display("p=674.06396,496.488");
-        }
-
         //# network layer
         ipv4: <default("Ipv4NetworkLayer")> like INetworkLayer if hasIpv4 {
             parameters:
@@ -164,6 +162,32 @@ module Ue
             parameters:
                 @display("p=550,446;b=600,5,,,,1");
         }
+
+        llc: <default("")> like IIeee8022Llc if typename != "" {
+            @display("p=375,525");
+        }
+        cb: MessageDispatcher {
+            @display("p=750,600;b=1000,5");
+        }
+        bridging: <default("")> like IProtocolLayer if typename != "" {
+            @display("p=674,674");
+        }
+        bl: MessageDispatcher {
+            @display("p=750,750;b=1000,5");
+        }
+        ethernet: <default(sizeof(ethg) > 0 ? "EthernetEncapsulation" : "")> like IEthernetLayer if typename != "" {
+            @display("p=375,825");
+        }
+        ieee8021q: <default("")> like IIeee8021qLayer if typename != "" {
+            @display("p=525,825");
+        }
+        ieee8021r: <default("")> like IIeee8021rLayer if typename != "" {
+            @display("p=675,825");
+        }
+        li: MessageDispatcher {
+            @display("p=750,900;b=1000,5,,,,1");
+        }
+
         //# PcapRecorders
         pcapRecorder[numPcapRecorders]: PcapRecorder {
             @display("p=126.84,346.69598,r,10");
@@ -179,6 +203,24 @@ module Ue
         //#
         //# Internal Tcp/Udp applications connections with transport layer
         //#
+
+        llc.lowerLayerOut --> cb.in++ if exists(llc);
+        llc.lowerLayerIn <-- cb.out++ if exists(llc);
+
+        cb.out++ --> bridging.upperLayerIn if exists(bridging);
+        bridging.upperLayerOut --> cb.in++ if exists(bridging);
+
+        bridging.lowerLayerOut --> bl.in++ if exists(bridging);
+        bl.out++ --> bridging.lowerLayerIn if exists(bridging);
+
+        cb.out++ --> bl.in++ if !exists(bridging);
+        bl.out++ --> cb.in++ if !exists(bridging);
+        
+        cb.out++ --> nl.in++;
+        cb.in++ <-- nl.out++;
+
+        llc.upperLayerOut --> nl.in++ if exists(llc);
+        llc.upperLayerIn <-- nl.out++ if exists(llc);
 
         for i=0..numApps-1 {
             app[i].socketOut --> at.in++;
@@ -221,26 +263,44 @@ module Ue
 
         tn.out++ --> nl.in++;
         tn.in++ <-- nl.out++;
+        
+        bl.out++ --> li.in++;
+        li.out++ --> bl.in++;
+        
+        bl.out++ --> ieee8021q.upperLayerIn if exists(ieee8021q);
+        ieee8021q.upperLayerOut --> bl.in++ if exists(ieee8021q);
+
+        bl.out++ --> ieee8021r.upperLayerIn if exists(ieee8021r);
+        ieee8021r.upperLayerOut --> bl.in++ if exists(ieee8021r);
+
+        bl.out++ --> ethernet.upperLayerIn if exists(ethernet);
+        ethernet.upperLayerOut --> bl.in++ if exists(ethernet);
+
+        ieee8021q.lowerLayerOut --> li.in++ if exists(ieee8021q);
+        li.out++ --> ieee8021q.lowerLayerIn if exists(ieee8021q);
+
+        ieee8021r.lowerLayerOut --> li.in++ if exists(ieee8021r);
+        li.out++ --> ieee8021r.lowerLayerIn if exists(ieee8021r);
+
+        ethernet.lowerLayerOut --> li.in++ if exists(ethernet);
+        li.out++ --> ethernet.lowerLayerIn if exists(ethernet);
 
         //#
         //# Internal link layer connections to network layer
         //#
-
-        cellularNic.upperLayerOut --> nl.in++;
-        cellularNic.upperLayerIn <-- nl.out++;
-
-        for i=0..numEthInterfaces-1 {
-            encap.lowerLayerOut --> eth[i].upperLayerIn;
-            encap.lowerLayerIn <-- eth[i].upperLayerOut;
+        
+        for i=0..sizeof(ethg)-1 {
+            eth[i].upperLayerOut --> li.in++;
+            eth[i].upperLayerIn <-- li.out++;
         }
-        encap.upperLayerOut --> nl.in++ if numEthInterfaces != 0;
-        encap.upperLayerIn <-- nl.out++ if numEthInterfaces != 0;
 
         for i=0..numLoInterfaces-1 {
-            nl.out++ --> lo[i].upperLayerIn;
-            lo[i].upperLayerOut --> nl.in++;
+            li.out++ --> lo[i].upperLayerIn;
+            lo[i].upperLayerOut --> li.in++;
         }
 
+        cellularNic.upperLayerOut --> li.in++;
+        cellularNic.upperLayerIn <-- li.out++;
         //#
         //# Connections between LTE/NR NIC and the radio medium
         //#
